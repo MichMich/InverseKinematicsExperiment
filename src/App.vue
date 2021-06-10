@@ -5,8 +5,10 @@
       <div class="base">
         <ClickableGrid :minX="-350" :maxX="350" :minY="0" :maxY="500" :stepSize="25"  @click="moveToCoordinates" />
         <div class="indicator"></div>
-        <ArmPiece :length="lengthA" :angle="parseFloat(angleA)">
-          <ArmPiece :length="lengthB" :angle="parseFloat(angleB)" />
+        <ArmPiece :length="lengthA" :angle="angleA">
+          <ArmPiece :length="lengthB" :angle="angleB">
+            <Gripper :angle="angleG-angleB-angleA" :length="100" />
+          </ArmPiece>
         </ArmPiece>
       </div>
     </div>
@@ -20,6 +22,10 @@
           <label>B: </label>
           <input type="range" min="-90" max="90" value="0" v-model="angleB">
         </div>
+        <div class="input-item">
+          <label>G: </label>
+          <input type="range" min="-90" max="90" value="0" v-model="angleG">
+        </div>
       </div>
       <div class="control-box">
         <pre v-text="data"></pre>
@@ -31,6 +37,7 @@
 <script>
 import KinematicsEngine from './KinematicsEngine'
 import ArmPiece from './components/ArmPiece.vue'
+import Gripper from './components/Gripper.vue'
 import ClickableGrid from './components/ClickableGrid.vue'
 
 const engine = new KinematicsEngine(300, 200)
@@ -39,7 +46,8 @@ export default {
   name: 'App',
   components: {
     ArmPiece,
-    ClickableGrid
+    ClickableGrid,
+    Gripper
   },
   data () {
     return {
@@ -47,6 +55,7 @@ export default {
       lengthB: engine.lengthB,
       angleA: 0,
       angleB: 0,
+      angleG: 0,
       data: engine.data()
     }
   },
@@ -60,14 +69,21 @@ export default {
       this.angleB = parseFloat(angle)
       engine.angleB = angle
       this.data = engine.data()
+    },
+    angleG (angle) {
+      this.angleG = parseFloat(angle)
+      engine.angleG = angle
+      this.data = engine.data()
     }
   },
   methods: {
     moveToCoordinates ({ x, y }) {
-      engine.setPosition(x, y)
+      engine.setPosition(x, y, this.angleG)
 
       this.angleA = engine.angleA
       this.angleB = engine.angleB
+      // this.angleG = engine.angleG
+
       this.data = engine.data()
     }
   }

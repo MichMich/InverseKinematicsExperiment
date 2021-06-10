@@ -23,35 +23,29 @@ export default class KinematicsEngine {
       this.angleA = angleFromBaseToTarget * -1
       this.angleB = 0
       this.targetReachable = false
-
-      return
-    }
-
-    if (distanceFromBaseToTarget <= this.lengthA - this.lengthB) {
+    } else if (distanceFromBaseToTarget <= this.lengthA - this.lengthB) {
       this.angleA = angleFromBaseToTarget * -1
       this.angleB = angleFromBaseToTarget >= 0 ? 180 : -180
       this.targetReachable = false
-
-      return
-    }
-
-    this.targetReachable = true
-
-    // Inner angle alpha
-    const cosAngleA = ((distanceFromBaseToTarget * distanceFromBaseToTarget) + (this.lengthA * this.lengthA) - (this.lengthB * this.lengthB)) / (2 * distanceFromBaseToTarget * this.lengthA)
-    const angleA = Math.acos(cosAngleA) * 180 / pi
-
-    // Inner angle beta
-    const cosAngleB = ((this.lengthB * this.lengthB) + (this.lengthA * this.lengthA) - (distanceFromBaseToTarget * distanceFromBaseToTarget)) / (2 * this.lengthB * this.lengthA)
-    const angleB = Math.acos(cosAngleB) * 180 / pi
-
-    // So they work in Unity reference frame
-    if (angleFromBaseToTarget >= 0) {
-      this.angleA = (angleFromBaseToTarget - angleA) * -1
-      this.angleB = (180 - angleB) * -1
     } else {
-      this.angleA = (angleFromBaseToTarget + angleA) * -1
-      this.angleB = (180 + angleB) * -1
+      this.targetReachable = true
+
+      // Inner angle alpha
+      const cosAngleA = ((distanceFromBaseToTarget * distanceFromBaseToTarget) + (this.lengthA * this.lengthA) - (this.lengthB * this.lengthB)) / (2 * distanceFromBaseToTarget * this.lengthA)
+      const angleA = Math.acos(cosAngleA) * 180 / pi
+
+      // Inner angle beta
+      const cosAngleB = ((this.lengthB * this.lengthB) + (this.lengthA * this.lengthA) - (distanceFromBaseToTarget * distanceFromBaseToTarget)) / (2 * this.lengthB * this.lengthA)
+      const angleB = Math.acos(cosAngleB) * 180 / pi
+
+      // So they work in Unity reference frame
+      if (angleFromBaseToTarget >= 0) {
+        this.angleA = (angleFromBaseToTarget - angleA) * -1
+        this.angleB = (180 - angleB) * -1
+      } else {
+        this.angleA = (angleFromBaseToTarget + angleA) * -1
+        this.angleB = (180 + angleB) * -1
+      }
     }
 
     if (this.angleA < -180) this.angleA += 360
